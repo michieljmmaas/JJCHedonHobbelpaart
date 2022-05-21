@@ -32,7 +32,7 @@ Deze powerbank geeft power aan alles. Dit heeft de volgende specs:
 Dit is belangrijk want module E moet genoeg power krijgen om te werken. 
 
 ### D: Aansluiting van de Hoorn.
-De kabels van de Hoorn zijn gesplit. Hierdoor kan het aangesloten worden op het zelfde systeem. 
+De kabel van de lampjes van de hoorn zijn gesplit. Hierdoor kan het aangesloten worden op het zelfde systeem / batterij.
 
 **Let op:**
 - Rood => 3.5V
