@@ -45,3 +45,7 @@ Hoe dit allemaal werkt is vast gelegd in [deze blogpost](https://learn.browndogg
 
 ## Ideeën voor nieuwe modules/uitbreidingen
 - Meer verschillende geluidjes
+- Knopjes waar je op kan drukken
+- Meer lampjes
+- Bierkoeler
+- Microfoon
