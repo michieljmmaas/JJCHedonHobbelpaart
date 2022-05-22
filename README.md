@@ -41,6 +41,8 @@ De kabel van de lampjes van de hoorn zijn gesplit. Hierdoor kan het aangesloten 
 ### E: MP3 Module
 De MP3 Module is met een aantal kabels vast aan de Bit Board (B). In de module zit ook een MicroSD kaart met een aantal audio bestanden (zie ook de `Audio` directory). De audio kabel gaat dan in de Boxen. 
 
+Om de MicroSD Kaart uit te lezen zit er SD Adapater in het doosjes. Anders moet je een van [deze USB Readers](https://www.bol.com/nl/nl/p/micro-sd-kaart-lezer-usb-stick-micro-sd-card-reader-usb-2-0-tf-kaart-lezer-usb-stick-adapter/9200000079930641/) hebben. Martin heeft een er eentje die je wel kan lenen. 
+
 Hoe dit allemaal werkt is vast gelegd in [deze blogpost](https://learn.browndoggadgets.com/Guide/MP3+Audio+Player/334). Onze implementatie veschilt een klein beetje. 
 
 ## Ideeën voor nieuwe modules/uitbreidingen
