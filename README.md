@@ -1,53 +1,142 @@
-# JJC Hedon Hobbelpaart
-Welkom op de JJC Hedon Hobbelpaart repo! Hier is een handleiding van het Paart, en tips hoe je het verder kan ontwikkelen. 
+# Unicorn Rocking Horse — Software Setup Guide
 
-## Borrel ToDo List
-- Opladen powerbank
-- Opladen boxen
-- Vraag Martin op de borrel om hem aan te sluiten
+Interactive Raspberry Pi 3 Model A+ rocking horse with sound, display, and motion detection.
+The horse plays a whinny sound when rocked, or a funny quote when you press the tail button.
 
-## Quicklinks
-- [Microbit Editor met Code](https://makecode.microbit.org/_bDTKwM4hyDMW)
-- [Inspiratie Bron MP3 Audio](https://learn.browndoggadgets.com/Guide/MP3+Audio+Player/334)
+---
 
-## Materiaal
-- [Microbit v2](https://makecode.microbit.org/device/v2)
-- [Bit Board Basic](https://www.browndoggadgets.com/products/crazy-circuits-bit-board)
-- [MP3 Module](https://www.amazon.com/dp/B0725RHR4D?psc=1&ref=ppx_yo2ov_dt_b_product_details)
+## ⚠️ Important: Write-Protected Filesystem
 
-## Overzicht
-![Overzicht](Photos/Overzicht.png)
-### A: Microbit V2
-De main brain achter alles. Hier staat de code op, en laat het paart hinniken. 
+The Pi runs in **write-protected mode** to prevent SD card corruption if power is lost.
+When protection is **ON**, changes don't persist after reboot unless you disable it first.
 
-### B: Bit Board V1.0
-De Microbit wordt hier in gepluggd. Dit geeft ons meer aansluitingen voor modules en onderdelen. 
+**Check the current status:**
+```bash
+cat /proc/cmdline | grep -o "overlay" || echo "Write protection is OFF"
+```
 
-### C: Powerbank
-Deze powerbank geeft power aan alles. Dit heeft de volgende specs:
-- Input: DC 5V-800mA
-- Output DC 5V-1A
-- Capacity: 1800mAh
+**To make permanent changes:** disable write protection in `sudo raspi-config` (Performance Options → Overlay FS), make your changes, then re-enable it.
 
-Dit is belangrijk want module E moet genoeg power krijgen om te werken. 
+---
 
-### D: Aansluiting van de Hoorn.
-De kabel van de lampjes van de hoorn zijn gesplit. Hierdoor kan het aangesloten worden op het zelfde systeem / batterij.
+## Accessing the Pi
 
-**Let op:**
-- Rood => 3.5V
-- Wit => Ground
+Throughout setup, you'll need to access the Pi remotely. You can use either:
+- **SSH command line:** `ssh pi@<hostname>` from your computer's terminal
+- **SSH browser/graphical file manager:** [MobaXTerm](https://mobaxterm.mobaxy.com/) (easier for file transfers)
 
-### E: MP3 Module
-De MP3 Module is met een aantal kabels vast aan de Bit Board (B). In de module zit ook een MicroSD kaart met een aantal audio bestanden (zie ook de `Audio` directory). De audio kabel gaat dan in de Boxen. 
+Both methods work equally well — choose whichever you prefer.
 
-Om de MicroSD Kaart uit te lezen zit er SD Adapater in het doosjes. Anders moet je een van [deze USB Readers](https://www.bol.com/nl/nl/p/micro-sd-kaart-lezer-usb-stick-micro-sd-card-reader-usb-2-0-tf-kaart-lezer-usb-stick-adapter/9200000079930641/) hebben. Martin heeft een er eentje die je wel kan lenen. 
+**Important:** The Pi only connects to Wi-Fi networks that were configured during the Raspberry Pi Imager flashing step. If you want to use the Pi in a different location (different Wi-Fi), you'll need to flash the microSD card again with the new Wi-Fi credentials.
 
-Hoe dit allemaal werkt is vast gelegd in [deze blogpost](https://learn.browndoggadgets.com/Guide/MP3+Audio+Player/334). Onze implementatie veschilt een klein beetje. 
+---
 
-## Ideeën voor nieuwe modules/uitbreidingen
-- Meer verschillende geluidjes
-- Knopjes waar je op kan drukken
-- Meer lampjes
-- Bierkoeler
-- Microfoon
+## Quick Start
+
+### 1. Flash the microSD card
+
+Use [Raspberry Pi Imager](https://www.raspberrypi.com/software/) to flash **Raspberry Pi OS Lite (32-bit or 64-bit)**.
+In the Imager's advanced settings: set hostname, username (`pi`), password, and Wi-Fi credentials. Enable SSH.
+
+### 2. Download and install
+
+After the Pi boots, connect to it via SSH and run the installer:
+
+```bash
+wget https://github.com/michieljmmaas/JJCHedonHobbelpaart/releases/latest/download/rocking-horse.zip
+unzip rocking-horse.zip
+sudo bash install.sh
+sudo reboot
+```
+
+---
+
+## After you reboot
+
+### 3a. Upload your own photos (optional)
+
+Audio and photos are pre-loaded, but you can replace them. Use SCP or your SSH browser's file manager to upload photos to `~/pictures/`.
+
+Supported formats: `.jpg` / `.png` (the display is landscape-oriented; portrait pictures will appear slightly squashed).
+
+### 3b. Test it
+
+Stop the service and run the script manually to verify everything works:
+
+```bash
+sudo systemctl stop rocking-horse
+python3 ~/rocking_horse.py
+```
+
+You should see "Initialising display..." → "Calibrating..." → "Ready." with a photo on screen.
+
+- Rock the horse past 25° → whinny plays, photo changes
+- Press tail button → quote plays, photo changes
+
+Watch the autostart log to confirm it runs on reboot:
+```bash
+journalctl -u rocking-horse -f
+```
+
+### 3c. Enable write protection (final safety step)
+
+Once everything is working, enable write-protected mode to prevent SD card corruption if power is lost:
+
+```bash
+sudo raspi-config
+```
+
+Navigate to **Performance Options** → **Overlay FS** and select **Yes**. When asked about write-protecting the boot partition, select **No**. Reboot.
+
+**Important:** With write protection enabled, filesystem changes don't persist after reboot. If you need to make permanent changes later, disable write protection first in `raspi-config`, make your changes, then re-enable it.
+
+---
+
+## Attaching & Detaching
+
+### To attach the horse to the enclosure:
+1. Insert the conversion cable into the Grove plug on the D5 slot
+2. Connect the Dupont housing ends to the button cable
+3. Plug in the speaker via the 3.5mm jack
+4. Connect the powerbank via micro-USB
+
+### To detach (for transport):
+1. Remove the conversion cable ends from the Dupont housing → button disconnects
+2. Pull the 3.5mm speaker plug
+3. Unplug the micro-USB power
+   
+---
+
+## Files in this package
+
+```
+rocking_horse.py              Main script — sensor input, audio, display
+install.sh                    One-time setup (run once)
+systemd/
+  rocking-horse.service       Autostart on boot
+README.md                     This file (software setup)
+rocking_horse_build_plan.html Hardware details, wiring, assembly
+```
+
+For **hardware assembly, component list, and detailed wiring**, see `rocking_horse_build_plan.html`.
+
+---
+
+## Content Disclaimer
+
+The quotes in the `quotes/` folder were recorded as student humor and are extracted from their original context purely for comedic effect. **They are not meant to be taken seriously, and the authors of this project do not condone or endorse the statements made in these recordings.** We were students and we were drunk. Please don't get the wrong idea about this one.
+
+**Note:** Waveshare is not affiliated with this project, this disclaimer, or the content of the quotes. Waveshare is only providing the LCD display library as a third-party component.
+
+
+---
+
+## License
+
+The code in this repository is released under the MIT License — do whatever you like with it. See [LICENSE](LICENSE) for the full text.
+
+The install script downloads a third-party component that has its own terms:
+
+| Component | License |
+|-----------|---------|
+| Waveshare 2.4" LCD Module (LCD_2inch4) | See documentation at [Waveshare Wiki](https://www.waveshare.com/wiki/2.4inch_LCD_Module) |
